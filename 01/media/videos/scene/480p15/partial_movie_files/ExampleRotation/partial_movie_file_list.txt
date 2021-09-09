@@ -1,2 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/home/chris/manim/01/media/videos/scene/480p15/partial_movie_files/ExampleRotation/921711572_861099373_4258778758.mp4'
