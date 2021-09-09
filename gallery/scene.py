@@ -78,9 +78,10 @@ class MovingAngle(Scene):
         line = Line(LEFT, RIGHT)
         line_ref = line.copy()
 
-        line_moving = Line(LEFT, RIGHT)
+        line_moving = Line(rotation_center, RIGHT)
         # rotate to initial setting
         line_moving.rotate(theta_tracker.get_value() * DEGREES, about_point=rotation_center)
+        # arch to be shown
         a = Angle(line, line_moving, radius=0.5, other_angle=False)
         tex = MathTex(r"\theta").move_to(
             # get middle of arch of virtual angle
@@ -90,23 +91,25 @@ class MovingAngle(Scene):
         self.add(line, line_moving, a, tex)
         self.wait()
 
+        # this function get applied every frame
+        # change angle according to theta_tracker
         line_moving.add_updater(
             lambda x: x.become(line_ref.copy()).rotate(
-                theta_tracker.get_value() * DEGREES, about_point=rotation_center
-            )
+                theta_tracker.get_value() * DEGREES, about_point=rotation_center)
         )
 
+        # update arch according to lines
         a.add_updater(
             lambda x: x.become(Angle(line, line_moving, radius=0.5, other_angle=False))
         )
+        # update location of label according to lines
         tex.add_updater(
-            lambda x: x.move_to(
-                Angle(
-                    line, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
-                ).point_from_proportion(0.5)
-            )
+            lambda x: x.move_to(Angle(
+                line, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
+            ).point_from_proportion(0.5))
         )
 
+        # play animation
         self.play(theta_tracker.animate.set_value(40))
         self.play(theta_tracker.animate.increment_value(140))
         self.play(tex.animate.set_color(RED), run_time=0.5)
