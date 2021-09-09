@@ -49,3 +49,60 @@ class Textt2cExample(Scene):
         # problems with ligatures -> entire ligature gets red (only < should be red)
         brokenligatures = Text("Broken<=", font="JetBrains Mono", t2c={"[-2:-1]": RED, "Broken": YELLOW}).next_to(t2cindices, DOWN)
         self.add(t2cindices, t2cwords, brokenligatures)
+
+
+class GradientExample(Scene):
+    def construct(self):
+        t = Text("Hello World!", gradient=(RED, BLUE, GREEN), font_size=96)
+        self.add(t)
+
+
+class t2gExample(Scene):
+    def construct(self):
+        t2gindices = Text(
+            "Hello",
+            t2g={
+                "[1:-1]": (RED, GREEN),
+            },
+        ).move_to(LEFT)
+        t2gwords = Text(
+            "World",
+            t2g={
+                "World": (RED, BLUE),
+            },
+        ).next_to(t2gindices, RIGHT)
+        self.add(t2gindices, t2gwords)
+
+
+class LineSpacing(Scene):
+    def construct(self):
+        a = Text("Hello\nWorld", line_spacing=1)
+        b = Text("Hello\nWorld", line_spacing=4)
+        self.add(Group(a, b).arrange(LEFT, buff=5))
+
+
+class DisableLigatures(Scene):
+    def construct(self):
+        li = Text("fl ligature", font_size=96)
+        nli = Text("fl ligature", disable_ligatures=True, font_size=96)
+        self.add(Group(li, nli).arrange(DOWN, buff=0.8))
+
+
+class IterateColor(Scene):
+    def construct(self):
+        text = Text("Colors", font_size=96)
+        # Text behaves like VGroups
+        # ligatures broken
+        for letter in text:
+            letter.set_color(random_color())
+        self.add(text)
+
+
+class MarkupTest(Scene):
+    def construct(self):
+        text = MarkupText(
+            f'<span underline="double" underline_color="{GREEN}">double green underline</span> in red text<span fgcolor="{YELLOW}"> except this</span>',
+            color=RED,
+            font_size=34
+        )
+        self.add(text)
