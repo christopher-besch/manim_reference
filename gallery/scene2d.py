@@ -349,3 +349,75 @@ class FollowingGraphCamera(MovingCameraScene):
         self.camera.frame.remove_updater(update_curve)
 
         self.play(Restore(self.camera.frame))
+
+
+# todo: understand this
+class MovingZoomedSceneAround(ZoomedScene):
+    def __init__(self, **kwargs):
+        # setup zoomed camera
+        ZoomedScene.__init__(
+            self,
+            zoom_factor=0.3,
+            zoomed_display_height=1,
+            zoomed_display_width=6,
+            image_frame_stroke_width=20,
+            zoomed_camera_config={"default_frame_stroke_width": 3},
+            **kwargs
+        )
+
+    def construct(self):
+        dot = Dot().shift(UL * 2)
+        # background image
+        image = ImageMobject(np.uint8([[0, 100, 30, 200],
+                                       [255, 0, 5, 33]]))
+        image.height = 7
+        # text at original place
+        frame_text = Text("Frame", color=PURPLE, font_size=67)
+        # text at zoom
+        zoomed_camera_text = Text("Zoomed camera", color=RED, font_size=67)
+
+        self.add(image, dot)
+        # get frame shown in zoomed camera and zoomed camera itself
+        zoomed_camera = self.zoomed_camera
+        zoomed_display = self.zoomed_display
+        # get frames
+        frame = zoomed_camera.frame
+        zoomed_display_frame = zoomed_display.display_frame
+
+        # input
+        frame.move_to(dot)
+        frame.set_color(PURPLE)
+        # output
+        zoomed_display_frame.set_color(RED)
+        zoomed_display.shift(DOWN)
+
+        zd_rect = BackgroundRectangle(zoomed_display, fill_opacity=0, buff=MED_SMALL_BUFF)
+        # purpose unknown
+        self.add_foreground_mobject(zd_rect)
+
+        unfold_camera = UpdateFromFunc(zd_rect, lambda rect: rect.replace(zoomed_display))
+
+        frame_text.next_to(frame, DOWN)
+
+        # create camera frame and zoom
+        self.play(Create(frame), FadeIn(frame_text, shift=UP))
+        self.activate_zooming()
+
+        self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
+        zoomed_camera_text.next_to(zoomed_display_frame, DOWN)
+        self.play(FadeIn(zoomed_camera_text, shift=UP))
+        scale_factor = [0.5, 1.5, 0]
+        self.play(
+            frame.animate.scale(scale_factor),
+            zoomed_display.animate.scale(scale_factor),
+            FadeOut(zoomed_camera_text),
+            FadeOut(frame_text),
+        )
+        self.wait()
+        self.play(ScaleInPlace(zoomed_display, 2))
+        self.wait()
+        self.play(frame.animate.shift(2.5 * DOWN))
+        self.wait()
+        self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera, rate_func=lambda t: smooth(1 - t))
+        self.play(Uncreate(zoomed_display_frame), FadeOut(frame))
+        self.wait()
