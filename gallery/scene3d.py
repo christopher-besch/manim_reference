@@ -56,6 +56,7 @@ class ThreeDCameraRotation(ThreeDScene):
 
 class ThreeDSurfacePlot(ThreeDScene):
     def construct(self):
+        # amount of squares in width/height
         resolution_fa = 42
         self.set_camera_orientation(phi=75*DEGREES, theta=-30*DEGREES)
 
@@ -75,8 +76,9 @@ class ThreeDSurfacePlot(ThreeDScene):
             u_range=[-2, 2],
         )
 
-        gauss_plane.scale_about_point(2, ORIGIN)
+        gauss_plane.scale(2, about_point=ORIGIN)
         gauss_plane.set_style(fill_opacity=1, stroke_color=GREEN)
+        # add checkerboard
         gauss_plane.set_fill_by_checkerboard(ORANGE, BLUE, opacity=0.5)
         axes = ThreeDAxes()
         self.add(axes, gauss_plane)
