@@ -469,7 +469,6 @@ class OpeningManim(Scene):
         self.wait()
 
 
-# todo: understand and redo with Axes()
 class SineCurveUnitCircle(Scene):
     def show_axis(self):
         x_start = np.array([-6, 0, 0])
@@ -525,6 +524,7 @@ class SineCurveUnitCircle(Scene):
             y = dot.get_center()[1]
             return Line(dot.get_center(), np.array([x, y, 0]), color=YELLOW_A, stroke_width=2)
 
+        # actual sin curve is made out of many lines
         self.curve = VGroup()
         self.curve.add(Line(self.curve_start, self.curve_start))
 
@@ -539,8 +539,9 @@ class SineCurveUnitCircle(Scene):
 
         dot.add_updater(go_around_circle)
 
+        # create mobject and constantly update/replace using same function
         origin_to_circle_line = always_redraw(get_line_to_circle)
-        dot_to_curve_line = always_redraw(get_line_to_circle)
+        dot_to_curve_line = always_redraw(get_line_to_curve)
         sine_curve_line = always_redraw(get_curve)
 
         self.add(dot)
