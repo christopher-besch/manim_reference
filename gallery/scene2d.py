@@ -196,11 +196,9 @@ class PointWithTrace(Scene):
 
         # add current location of dot as corner of path
         def update_path(path):
-            # copy seem to be unnecessary
-            path.add_points_as_corners([dot.get_center()])
-            # previous_path = path.copy()
-            # previous_path.add_points_as_corners([dot.get_center()])
-            # path.become(previous_path)
+            previous_path = path.copy()
+            previous_path.add_points_as_corners([dot.get_center()])
+            path.become(previous_path)
 
         # now only do stuff with dot and path will follow
         path.add_updater(update_path)
