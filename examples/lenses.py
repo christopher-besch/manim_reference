@@ -3,37 +3,44 @@ from manim import *
 
 class LenseExample(Scene):
     def construct(self):
-        c1 = Circle(10).move_to(9*LEFT)
-        c2 = Circle(10).move_to(9*RIGHT)
+        c1 = Circle(2).move_to(1*LEFT)
+        c2 = Circle(2).move_to(1*RIGHT)
         lense = Intersection(c1, c2, color=YELLOW, fill_opacity=1, stroke_width=0)
-        self.add(lense)
+        self.add(lense, c2)
 
-        self.shoot_ray(c1, c2, 1, 1.0, 1.4)
-        self.shoot_ray(c1, c2, 0.5, 1.0, 1.4)
-        self.shoot_ray(c1, c2, 0, 1.0, 1.4)
-        self.shoot_ray(c1, c2, -0.5, 1.0, 1.4)
-        self.shoot_ray(c1, c2, -1, 1.0, 1.4)
+        # self.shoot_ray(c1, c2, 1, 1.0, 1.4)
+        # self.shoot_ray(c1, c2, 0.5, 1.0, 1.4)
+        # self.shoot_ray(c1, c2, 0, 1.0, 1.4)
+        # self.shoot_ray(c1, c2, -0.5, 1.0, 1.4)
+        # self.shoot_ray(c1, c2, -1, 1.0, 1.4)
 
-    def intersect(self, circle_origin, radius, ray_origin, inclination, outer=True):
+        start = Point((-2, 0, 0))
+        end = Point(self.intersect(c2.get_center(), c2.radius, start.get_center(), 2*RIGHT + UP))
+        line = Line(start, end)
+        self.add(start, end, line)
+
+    def intersect(self, circle_center, radius, ray_origin, inclination):
         """Intersection between circle and ray."""
-        center_to_origin = ray_origin - circle_origin
+        center_to_origin = ray_origin - circle_center
+        # inclination = normalize(inclination)
 
-        a = np.linalg.norm(inclination)**2
+        a = inclination.dot(inclination)
         half_b = center_to_origin.dot(inclination)
-        c = np.linalg.norm(center_to_origin)**2 - radius**2
+        c = center_to_origin.dot(center_to_origin) - radius**2
 
-        discriminant = half_b * half_b - a * c
-        assert discriminant > 0
+        discriminant = half_b**2 - a*c
+        assert discriminant >= 0
 
-        if outer:
-            t = (-half_b - np.sqrt(discriminant) / a)
-        else:
-            t = (-half_b + np.sqrt(discriminant) / a)
+        # find nearest root
+        t = (-half_b - np.sqrt(discriminant) / a)
+        # if (t < 0):
+        # t = (-b + np.sqrt(discriminant) / 2*a)
         return ray_origin + t * inclination
 
     def shoot_ray(self, c1: Circle, c2: Circle, start_y, eta_air, eta_glass):
         start = Point((-4, start_y, 0))
-        inter1 = Point(self.intersect(c2.get_center(), c2.radius, start.get_center(), RIGHT, True))
+        inter1 = Point(self.intersect(c2.get_center(), c2.radius, start.get_center(), UR, True))
+        self.add(inter1)
         ray1 = Line(start, inter1)
         self.add(ray1)
 
