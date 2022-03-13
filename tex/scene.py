@@ -74,3 +74,29 @@ class LaTeXTemplateLibrary(Scene):
         # using TexTemplateLibrary for chinese text
         tex = Tex(r"Hello 你好 \LaTeX", tex_template=TexTemplateLibrary.ctex, font_size=144)
         self.add(tex)
+
+
+class CircuitTikZ(Scene):
+    def construct(self):
+        latex_temp = TexTemplate()
+        latex_temp.add_to_preamble(r"\usepackage{circuitikz}")
+
+        circuit = Tex(r"""
+        \begin{circuitikz}
+            \draw (0,0)
+            to[V,v=$U_q$] (0,1.5);
+            \draw (0,1.5)
+            to[nos] (2,1.5)
+            to[C=$C$] (2,0)
+            to[short] (0,0);
+            \draw (2,1.5)
+            to[short] (4,1.5)
+            to[R=$R$] (4,0)
+            to[short] (2,0);
+            \draw (4,1.5)
+            to[short] (6,1.5)
+            to[voltmeter] (6,0)
+            to[short] (4,0);
+        \end{circuitikz}
+        """, tex_template=latex_temp, color=WHITE, fill_opacity=0, stroke_width=3)
+        self.add(circuit)
